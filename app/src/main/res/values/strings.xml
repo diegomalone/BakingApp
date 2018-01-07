@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Baking App</string>
+
+    <string name="action_try_again">Try again</string>
+
+    <string name="error_fetching_recipe_list">Error fetching recipe list</string>
 </resources>
