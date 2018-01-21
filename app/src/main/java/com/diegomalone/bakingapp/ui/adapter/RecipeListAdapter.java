@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.diegomalone.bakingapp.model.Recipe;
+import com.diegomalone.bakingapp.ui.events.RecipeClickListener;
 import com.diegomalone.bakingapp.view.RecipeCardView;
 
 import java.util.ArrayList;
@@ -21,8 +22,11 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
     private Context context;
     private ArrayList<Recipe> recipeList = new ArrayList<>();
 
-    public RecipeListAdapter(Context context, List<Recipe> recipeList) {
+    private RecipeClickListener recipeClickListener;
+
+    public RecipeListAdapter(Context context, List<Recipe> recipeList, RecipeClickListener recipeClickListener) {
         this.context = context;
+        this.recipeClickListener = recipeClickListener;
         updateList(recipeList);
     }
 
@@ -63,6 +67,9 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
             super(itemView);
 
             recipeCardView = (RecipeCardView) itemView;
+
+            recipeCardView.setOnClickListener(view ->
+                    recipeClickListener.onRecipeClick(recipeCardView.getRecipe()));
         }
     }
 }

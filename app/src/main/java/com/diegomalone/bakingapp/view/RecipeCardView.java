@@ -52,4 +52,8 @@ public class RecipeCardView extends LinearLayout {
 
         recipeNameTextView.setText(recipe.getName());
     }
+
+    public Recipe getRecipe() {
+        return recipe;
+    }
 }
