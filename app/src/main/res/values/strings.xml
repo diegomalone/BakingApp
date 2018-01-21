@@ -3,5 +3,8 @@
 
     <string name="action_try_again">Try again</string>
 
+    <string name="success_fetching_recipe_list">Recipe list updated</string>
     <string name="error_fetching_recipe_list">Error fetching recipe list</string>
+
+    <string name="action_reload">Reload</string>
 </resources>

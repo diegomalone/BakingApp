@@ -4,17 +4,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.network.BackingDataSource;
 import com.diegomalone.bakingapp.ui.adapter.RecipeListAdapter;
+import com.diegomalone.bakingapp.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +33,15 @@ import timber.log.Timber;
 public class RecipeListFragment extends Fragment {
 
     public static final String LIST_KEY = "listKey";
+    public static final int GRID_SPAN_COUNT = 3;
 
     private ArrayList<Recipe> recipeList = new ArrayList<>();
 
     private RecyclerView recipeListRecyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private RecipeListAdapter recipeListAdapter;
 
     private BackingDataSource backingDataSource;
+    private boolean isPhone = true;
 
     public RecipeListFragment() {
         backingDataSource = BackingDataSource.getInstance();
@@ -45,12 +50,17 @@ public class RecipeListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_recipe_list, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (getContext() != null) {
+            isPhone = getContext().getResources().getBoolean(R.bool.is_phone);
+        }
 
         recipeListRecyclerView = view.findViewById(R.id.recipeListRecyclerView);
 
@@ -75,12 +85,32 @@ public class RecipeListFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_recipe_list, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.action_reload:
+                loadRecipes();
+                return true;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
     public void loadRecipes() {
         backingDataSource.getRecipeList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(recipeList -> {
                             Timber.i("Recipe list received");
+                            ToastUtils.showToast(getContext(), getString(R.string.success_fetching_recipe_list));
                             updateRecipeList(recipeList);
                         }, error -> Timber.e(error)
                 );
@@ -90,6 +120,9 @@ public class RecipeListFragment extends Fragment {
         this.recipeList.clear();
         this.recipeList.addAll(recipeList);
 
+        // TODO Remove test items from code
+        this.recipeList.addAll(recipeList);
+
         if (recipeListAdapter != null) {
             recipeListAdapter.updateList(recipeList);
             recipeListAdapter.notifyDataSetChanged();
@@ -97,12 +130,25 @@ public class RecipeListFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        layoutManager = new LinearLayoutManager(getContext());
+        RecyclerView.LayoutManager layoutManager = getLayoutManager();
         recipeListRecyclerView.setLayoutManager(layoutManager);
 
         recipeListAdapter = new RecipeListAdapter(getContext(), null, recipe ->
-            Toast.makeText(getContext(), recipe.getName(), Toast.LENGTH_SHORT).show()
+                ToastUtils.showToast(getContext(), recipe.getName())
         );
         recipeListRecyclerView.setAdapter(recipeListAdapter);
+    }
+
+    @NonNull
+    private RecyclerView.LayoutManager getLayoutManager() {
+        RecyclerView.LayoutManager layoutManager;
+
+        if (isPhone) {
+            layoutManager = new LinearLayoutManager(getContext());
+        } else {
+            layoutManager = new GridLayoutManager(getContext(), GRID_SPAN_COUNT);
+        }
+
+        return layoutManager;
     }
 }
