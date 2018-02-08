@@ -1,5 +1,6 @@
 package com.diegomalone.bakingapp.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.network.BackingDataSource;
 import com.diegomalone.bakingapp.ui.adapter.RecipeListAdapter;
+import com.diegomalone.bakingapp.ui.events.RecipeClickListener;
+import com.diegomalone.bakingapp.utils.FlowController;
 import com.diegomalone.bakingapp.utils.ToastUtils;
 
 import java.util.ArrayList;
@@ -43,8 +46,22 @@ public class RecipeListFragment extends Fragment {
     private BackingDataSource backingDataSource;
     private boolean isPhone = true;
 
+    private RecipeClickListener clickCallback;
+
     public RecipeListFragment() {
         backingDataSource = BackingDataSource.getInstance();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            clickCallback = (RecipeClickListener) getContext();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement " + RecipeClickListener.class.getSimpleName());
+        }
     }
 
     @Override
@@ -120,7 +137,7 @@ public class RecipeListFragment extends Fragment {
         this.recipeList.clear();
         this.recipeList.addAll(recipeList);
 
-        // TODO Remove test items from code
+        // TODO Remove these test items from code
         this.recipeList.addAll(recipeList);
 
         if (recipeListAdapter != null) {
@@ -133,9 +150,7 @@ public class RecipeListFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = getLayoutManager();
         recipeListRecyclerView.setLayoutManager(layoutManager);
 
-        recipeListAdapter = new RecipeListAdapter(getContext(), null, recipe ->
-                ToastUtils.showToast(getContext(), recipe.getName())
-        );
+        recipeListAdapter = new RecipeListAdapter(getContext(), null, clickCallback);
         recipeListRecyclerView.setAdapter(recipeListAdapter);
     }
 

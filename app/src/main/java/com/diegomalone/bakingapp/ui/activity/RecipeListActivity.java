@@ -5,11 +5,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 
 import com.diegomalone.bakingapp.R;
+import com.diegomalone.bakingapp.model.Recipe;
+import com.diegomalone.bakingapp.ui.events.RecipeClickListener;
 import com.diegomalone.bakingapp.ui.fragment.RecipeListFragment;
+import com.diegomalone.bakingapp.utils.FlowController;
+import com.diegomalone.bakingapp.utils.ToastUtils;
 
 import butterknife.BindView;
 
-public class RecipeListActivity extends BaseActivity {
+public class RecipeListActivity extends BaseActivity
+        implements RecipeClickListener {
 
     public static final String FRAGMENT_TAG = "recipeListFragment";
 
@@ -38,5 +43,11 @@ public class RecipeListActivity extends BaseActivity {
         } else {
             recipeListFragment = (RecipeListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         }
+    }
+
+    @Override
+    public void onRecipeClick(Recipe recipe) {
+        FlowController.openRecipeStepScreen(this, recipe);
+        ToastUtils.showToast(this, recipe.getName());
     }
 }
