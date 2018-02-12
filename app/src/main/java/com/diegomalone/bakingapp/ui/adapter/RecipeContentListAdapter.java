@@ -147,7 +147,7 @@ public class RecipeContentListAdapter extends RecyclerView.Adapter<RecyclerView.
 
         protected void setDataPosition(int position) {
             step = stepList.get(position);
-            textView.setText(step.getDescription());
+            textView.setText(step.getShortDescription());
         }
     }
 }

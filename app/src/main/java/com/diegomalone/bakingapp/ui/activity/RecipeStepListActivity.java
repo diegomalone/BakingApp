@@ -11,7 +11,7 @@ import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
 import com.diegomalone.bakingapp.ui.events.StepClickListener;
 import com.diegomalone.bakingapp.ui.fragment.RecipeStepListFragment;
-import com.diegomalone.bakingapp.utils.ToastUtils;
+import com.diegomalone.bakingapp.utils.FlowController;
 
 import butterknife.BindView;
 
@@ -33,6 +33,8 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
 
     private RecipeStepListFragment recipeStepListFragment;
 
+    private Recipe recipe;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,18 +43,22 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
         setupToolbar(toolbar, true);
 
         Intent intent = getIntent();
-        Recipe recipe = intent.getParcelableExtra(RECIPE_EXTRA);
+        recipe = intent.getParcelableExtra(RECIPE_EXTRA);
 
-        recipeStepListFragment = RecipeStepListFragment.newInstance(recipe);
+        if (savedInstanceState == null) {
+            recipeStepListFragment = RecipeStepListFragment.newInstance(recipe);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment, recipeStepListFragment, STEP_LIST_FRAGMENT_TAG)
-                .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment, recipeStepListFragment, STEP_LIST_FRAGMENT_TAG)
+                    .commit();
+        } else {
+            recipeStepListFragment = (RecipeStepListFragment) getSupportFragmentManager().findFragmentByTag(STEP_LIST_FRAGMENT_TAG);
+        }
     }
 
     @Override
     public void onStepClick(Step step) {
-        ToastUtils.showToast(this, step.getShortDescription());
+        FlowController.openRecipeStepScreen(this, recipe, step);
     }
 }

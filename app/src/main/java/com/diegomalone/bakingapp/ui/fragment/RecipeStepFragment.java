@@ -1,10 +1,145 @@
 package com.diegomalone.bakingapp.ui.fragment;
 
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.diegomalone.bakingapp.R;
+import com.diegomalone.bakingapp.model.Recipe;
+import com.diegomalone.bakingapp.model.Step;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+
+import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by malone on 12/02/18.
  */
 
 public class RecipeStepFragment extends Fragment {
+
+    public static final String RECIPE_KEY = "recipeKey";
+    public static final String STEP_KEY = "stepKey";
+
+    private Recipe recipe;
+    private Step step;
+
+    private TextView stepTextView;
+
+    private SimpleExoPlayer exoPlayer;
+    private SimpleExoPlayerView playerView;
+
+    public static RecipeStepFragment newInstance(Recipe recipe, Step step) {
+        RecipeStepFragment fragment = new RecipeStepFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RECIPE_KEY, recipe);
+        bundle.putParcelable(STEP_KEY, step);
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_step_detail, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(view);
+
+        Bundle args = getArguments();
+
+        if (args != null) {
+            recipe = args.getParcelable(RECIPE_KEY);
+            step = args.getParcelable(STEP_KEY);
+        }
+
+        setTitle();
+
+        initViews(view);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelable(RECIPE_KEY, recipe);
+        outState.putParcelable(STEP_KEY, step);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+    }
+
+    private void initializePlayer(Uri mediaUri) {
+
+        if (exoPlayer == null) {
+            // Create an instance of the ExoPlayer.
+            TrackSelector trackSelector = new DefaultTrackSelector();
+            LoadControl loadControl = new DefaultLoadControl();
+            exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+            playerView.setPlayer(exoPlayer);
+
+            // Prepare the MediaSource.
+            String userAgent = Util.getUserAgent(getContext(), "BakingApp");
+            MediaSource mediaSource = new ExtractorMediaSource(mediaUri,
+                    new DefaultDataSourceFactory(getContext(), userAgent),
+                    new DefaultExtractorsFactory(),
+                    null, null);
+            exoPlayer.prepare(mediaSource);
+            exoPlayer.setPlayWhenReady(true);
+        }
+    }
+
+    private void releasePlayer() {
+        if (exoPlayer != null) {
+            exoPlayer.stop();
+            exoPlayer.release();
+            exoPlayer = null;
+        }
+    }
+
+    private void initViews(View baseView) {
+        stepTextView = baseView.findViewById(R.id.stepDescriptionTextView);
+        playerView = baseView.findViewById(R.id.videoPlayer);
+
+        stepTextView.setText(step.getDescription());
+        playerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.ic_recipe_video_place_holder));
+
+        if (step.getVideoURL() != null && !step.getVideoURL().isEmpty()) {
+            initializePlayer(Uri.parse(step.getVideoURL()));
+        } else {
+            playerView.setVisibility(View.GONE);
+        }
+    }
+
+    private void setTitle() {
+        if (getActivity() != null) {
+            getActivity().setTitle(recipe.getName());
+        }
+    }
 }

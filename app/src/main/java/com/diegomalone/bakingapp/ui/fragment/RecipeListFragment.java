@@ -20,7 +20,6 @@ import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.network.BackingDataSource;
 import com.diegomalone.bakingapp.ui.adapter.RecipeListAdapter;
 import com.diegomalone.bakingapp.ui.events.RecipeClickListener;
-import com.diegomalone.bakingapp.utils.FlowController;
 import com.diegomalone.bakingapp.utils.ToastUtils;
 
 import java.util.ArrayList;
@@ -135,9 +134,6 @@ public class RecipeListFragment extends Fragment {
 
     public void updateRecipeList(@NonNull List<Recipe> recipeList) {
         this.recipeList.clear();
-        this.recipeList.addAll(recipeList);
-
-        // TODO Remove these test items from code
         this.recipeList.addAll(recipeList);
 
         if (recipeListAdapter != null) {

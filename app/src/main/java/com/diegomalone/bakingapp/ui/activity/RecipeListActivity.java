@@ -46,6 +46,6 @@ public class RecipeListActivity extends BaseActivity
 
     @Override
     public void onRecipeClick(Recipe recipe) {
-        FlowController.openRecipeStepScreen(this, recipe);
+        FlowController.openRecipeStepListScreen(this, recipe);
     }
 }
