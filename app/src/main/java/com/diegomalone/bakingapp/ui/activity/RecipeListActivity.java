@@ -9,7 +9,6 @@ import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.ui.events.RecipeClickListener;
 import com.diegomalone.bakingapp.ui.fragment.RecipeListFragment;
 import com.diegomalone.bakingapp.utils.FlowController;
-import com.diegomalone.bakingapp.utils.ToastUtils;
 
 import butterknife.BindView;
 
@@ -31,7 +30,7 @@ public class RecipeListActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
         bindViews();
-        setSupportActionBar(toolbar);
+        setupToolbar(toolbar, false);
 
         if (savedInstanceState == null) {
             recipeListFragment = new RecipeListFragment();
@@ -48,6 +47,5 @@ public class RecipeListActivity extends BaseActivity
     @Override
     public void onRecipeClick(Recipe recipe) {
         FlowController.openRecipeStepScreen(this, recipe);
-        ToastUtils.showToast(this, recipe.getName());
     }
 }

@@ -3,6 +3,7 @@ package com.diegomalone.bakingapp.ui.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import butterknife.ButterKnife;
 
@@ -17,7 +18,24 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
+    protected void setupToolbar(Toolbar toolbar, boolean backButton) {
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+
+            if (backButton) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+            }
+        }
+    }
+
     protected void bindViews() {
         ButterKnife.bind(this);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

@@ -6,5 +6,16 @@
     <string name="success_fetching_recipe_list">Recipe list updated</string>
     <string name="error_fetching_recipe_list">Error fetching recipe list</string>
 
+    <string name="recipe_contents_ingredients_title">Ingredients</string>
+    <string name="recipe_contents_steps_title">Steps</string>
+
     <string name="action_reload">Reload</string>
+
+    <string name="measure_unit_unit">unit</string>
+    <string name="measure_unit_g">grams</string>
+    <string name="measure_unit_k">kilos</string>
+    <string name="measure_unit_tsp">teaspoon</string>
+    <string name="measure_unit_tblsp">tablespoon</string>
+    <string name="measure_unit_oz">ounces</string>
+    <string name="measure_unit_cup">cup</string>
 </resources>

@@ -2,7 +2,6 @@ package com.diegomalone.bakingapp.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,11 +26,13 @@ import java.util.ArrayList;
 
 public class RecipeStepListFragment extends Fragment {
 
+    public static final String RECIPE_KEY = "recipeKey";
     public static final String INGREDIENT_LIST_KEY = "ingredientListKey";
     public static final String STEP_LIST_KEY = "stepListKey";
 
     private ArrayList<Step> stepList = new ArrayList<>();
     private ArrayList<Ingredient> ingredientList = new ArrayList<>();
+    private Recipe recipe;
 
     private RecyclerView stepListRecyclerView;
     private RecipeContentListAdapter recipeContentListAdapter;
@@ -50,6 +51,7 @@ public class RecipeStepListFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(INGREDIENT_LIST_KEY, ingredientList);
         bundle.putParcelableArrayList(STEP_LIST_KEY, stepList);
+        bundle.putParcelable(RECIPE_KEY, recipe);
         fragment.setArguments(bundle);
 
         return fragment;
@@ -84,15 +86,25 @@ public class RecipeStepListFragment extends Fragment {
         if (args != null) {
             ingredientList = args.getParcelableArrayList(INGREDIENT_LIST_KEY);
             stepList = args.getParcelableArrayList(STEP_LIST_KEY);
+            recipe = args.getParcelable(RECIPE_KEY);
         }
 
         initRecyclerView();
+
+        setTitle();
+    }
+
+    private void setTitle() {
+        if (getActivity() != null) {
+            getActivity().setTitle(recipe.getName());
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelableArrayList(INGREDIENT_LIST_KEY, ingredientList);
         outState.putParcelableArrayList(STEP_LIST_KEY, stepList);
+        outState.putParcelable(RECIPE_KEY, recipe);
         super.onSaveInstanceState(outState);
     }
 
@@ -100,7 +112,7 @@ public class RecipeStepListFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         stepListRecyclerView.setLayoutManager(layoutManager);
 
-        recipeContentListAdapter = new RecipeContentListAdapter(ingredientList, stepList, clickCallback);
+        recipeContentListAdapter = new RecipeContentListAdapter(getContext(), ingredientList, stepList, clickCallback);
         stepListRecyclerView.setAdapter(recipeContentListAdapter);
     }
 }

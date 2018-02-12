@@ -38,7 +38,7 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_step_list);
         bindViews();
-        setSupportActionBar(toolbar);
+        setupToolbar(toolbar, true);
 
         Intent intent = getIntent();
         Recipe recipe = intent.getParcelableExtra(RECIPE_EXTRA);
