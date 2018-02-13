@@ -1,6 +1,7 @@
 package com.diegomalone.bakingapp.ui.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ public class RecipeContentListAdapter extends RecyclerView.Adapter<RecyclerView.
     private StepClickListener stepClickListener;
 
     private Context context;
+    private Step selectedStep;
 
     public RecipeContentListAdapter(Context context, List<Ingredient> ingredientList,
                                     List<Step> stepList, StepClickListener stepClickListener) {
@@ -41,6 +43,11 @@ public class RecipeContentListAdapter extends RecyclerView.Adapter<RecyclerView.
 
         this.ingredientList.addAll(ingredientList);
         this.stepList.addAll(stepList);
+    }
+
+    public void setStepSelected(Step step) {
+        selectedStep = step;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -148,6 +155,13 @@ public class RecipeContentListAdapter extends RecyclerView.Adapter<RecyclerView.
         protected void setDataPosition(int position) {
             step = stepList.get(position);
             textView.setText(step.getShortDescription());
+
+            int backgroundColor = ContextCompat.getColor(context, R.color.colorTransparent);
+            if (selectedStep != null && selectedStep.getId() == step.getId()) {
+                backgroundColor = ContextCompat.getColor(context, R.color.colorStepSelected);
+            }
+
+            itemView.setBackgroundColor(backgroundColor);
         }
     }
 }

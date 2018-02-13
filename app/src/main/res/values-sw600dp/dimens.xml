@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_small_margin">4dp</dimen>
+    <dimen name="item_margin">12dp</dimen>
+
+    <dimen name="master_detail_panel_width">300dp</dimen>
+</resources>

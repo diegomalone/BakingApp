@@ -9,4 +9,7 @@
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="colorDivider">#BDBDBD</color>
+
+    <color name="colorTransparent">#00FFFFFF</color>
+    <color name="colorStepSelected">@color/colorPrimaryLight</color>
 </resources>

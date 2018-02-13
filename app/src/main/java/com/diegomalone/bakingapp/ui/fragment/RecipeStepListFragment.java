@@ -39,6 +39,8 @@ public class RecipeStepListFragment extends Fragment {
 
     private StepClickListener clickCallback;
 
+    private Step selectedStep;
+
     public static RecipeStepListFragment newInstance(Recipe recipe) {
         RecipeStepListFragment fragment = new RecipeStepListFragment();
 
@@ -92,11 +94,15 @@ public class RecipeStepListFragment extends Fragment {
         initRecyclerView();
 
         setTitle();
+
+        setStepSelected(selectedStep);
     }
 
-    private void setTitle() {
-        if (getActivity() != null) {
-            getActivity().setTitle(recipe.getName());
+    public void setStepSelected(Step step) {
+        selectedStep = step;
+
+        if (recipeContentListAdapter != null) {
+            recipeContentListAdapter.setStepSelected(step);
         }
     }
 
@@ -106,6 +112,12 @@ public class RecipeStepListFragment extends Fragment {
         outState.putParcelableArrayList(STEP_LIST_KEY, stepList);
         outState.putParcelable(RECIPE_KEY, recipe);
         super.onSaveInstanceState(outState);
+    }
+
+    private void setTitle() {
+        if (getActivity() != null) {
+            getActivity().setTitle(recipe.getName());
+        }
     }
 
     private void initRecyclerView() {

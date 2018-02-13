@@ -9,9 +9,10 @@ import android.support.v7.widget.Toolbar;
 import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
+import com.diegomalone.bakingapp.ui.events.PreviousNextClickListener;
 import com.diegomalone.bakingapp.ui.events.StepClickListener;
+import com.diegomalone.bakingapp.ui.fragment.RecipeStepFragment;
 import com.diegomalone.bakingapp.ui.fragment.RecipeStepListFragment;
-import com.diegomalone.bakingapp.utils.FlowController;
 
 import butterknife.BindView;
 
@@ -21,9 +22,12 @@ import static com.diegomalone.bakingapp.utils.FlowController.RECIPE_EXTRA;
  * Created by Diego Malone on 21/01/18.
  */
 
-public class RecipeStepListActivity extends BaseActivity implements StepClickListener {
+public class RecipeStepListActivity extends BaseActivity implements StepClickListener, PreviousNextClickListener {
 
     public static final String STEP_LIST_FRAGMENT_TAG = "stepListFragmentTag";
+    public static final String STEP_DETAIL_FRAGMENT_TAG = "stepDetailFragmentTag";
+
+    public static final String CURRENT_STEP_KEY = "currentStep";
 
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinatorLayout;
@@ -32,8 +36,10 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
     Toolbar toolbar;
 
     private RecipeStepListFragment recipeStepListFragment;
+    private RecipeStepFragment recipeStepFragment;
 
     private Recipe recipe;
+    private Step currentStep;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,10 +61,46 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
         } else {
             recipeStepListFragment = (RecipeStepListFragment) getSupportFragmentManager().findFragmentByTag(STEP_LIST_FRAGMENT_TAG);
         }
+
+        if (savedInstanceState != null) {
+            currentStep = savedInstanceState.getParcelable(CURRENT_STEP_KEY);
+        }
+
+        if (currentStep == null) {
+            if (recipe.getStepList() != null && !recipe.getStepList().isEmpty()) {
+                currentStep = recipe.getStepList().get(0);
+            }
+        }
+
+        showStep(currentStep);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(CURRENT_STEP_KEY, currentStep);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onStepClick(Step step) {
-        FlowController.openRecipeStepScreen(this, recipe, step);
+        showStep(step);
+        currentStep = step;
+    }
+
+    @Override
+    public void showStep(Step step) {
+        if (step == null) return;
+
+        recipeStepFragment = RecipeStepFragment.newInstance(recipe, step);
+        recipeStepListFragment.setStepSelected(step);
+
+        showFragment();
+    }
+
+    private void showFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentDetail, recipeStepFragment, STEP_DETAIL_FRAGMENT_TAG)
+                .commit();
     }
 }
