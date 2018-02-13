@@ -18,4 +18,7 @@
     <string name="measure_unit_tblsp">tablespoon</string>
     <string name="measure_unit_oz">ounces</string>
     <string name="measure_unit_cup">cup</string>
+
+    <string name="step_navigation_previous">Previous step</string>
+    <string name="step_navigation_next">Next step</string>
 </resources>

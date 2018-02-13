@@ -1,37 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-        android:id="@+id/videoPlayer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/item_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/descriptionCardView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/item_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/videoPlayer"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:id="@+id/stepDescriptionTextView"
-            android:layout_width="match_parent"
+        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            android:id="@+id/videoPlayer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/item_margin"
-            tools:text="Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. " />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/descriptionCardView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/item_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/videoPlayer"
+            app:layout_constraintVertical_bias="0.0">
 
-</android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/stepDescriptionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_margin"
+                tools:text="Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. Recipe description. It is a long text. " />
+
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:id="@+id/previousStepContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/default_margin"
+            android:paddingTop="@dimen/default_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:layout_width="@dimen/step_navigation_button_size"
+                android:layout_height="@dimen/step_navigation_button_size"
+                app:srcCompat="@drawable/ic_navigate_before_24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/item_margin"
+                android:paddingRight="@dimen/item_margin"
+                android:text="@string/step_navigation_previous" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nextStepContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/default_margin"
+            android:paddingTop="@dimen/default_margin"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/item_margin"
+                android:paddingStart="@dimen/item_margin"
+                android:text="@string/step_navigation_next" />
+
+            <ImageView
+                android:layout_width="@dimen/step_navigation_button_size"
+                android:layout_height="@dimen/step_navigation_button_size"
+                app:srcCompat="@drawable/ic_navigate_next_24dp" />
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

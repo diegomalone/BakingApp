@@ -1,5 +1,6 @@
 package com.diegomalone.bakingapp.ui.fragment;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
+import com.diegomalone.bakingapp.ui.events.PreviousNextClickListener;
+import com.diegomalone.bakingapp.utils.ModelUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -27,8 +30,9 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 /**
  * Created by malone on 12/02/18.
@@ -38,24 +42,45 @@ public class RecipeStepFragment extends Fragment {
 
     public static final String RECIPE_KEY = "recipeKey";
     public static final String STEP_KEY = "stepKey";
+    public static final String STEP_LIST_KEY = "stepListKey";
 
     private Recipe recipe;
     private Step step;
+    private ArrayList<Step> stepList = new ArrayList<>();
 
     private TextView stepTextView;
+    private View nextStepContainer, previousStepContainer;
 
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView playerView;
 
+    private PreviousNextClickListener clickCallback;
+
     public static RecipeStepFragment newInstance(Recipe recipe, Step step) {
         RecipeStepFragment fragment = new RecipeStepFragment();
+
+        ArrayList<Step> stepList = new ArrayList<>();
+        stepList.addAll(recipe.getStepList());
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(RECIPE_KEY, recipe);
         bundle.putParcelable(STEP_KEY, step);
+        bundle.putParcelableArrayList(STEP_LIST_KEY, stepList);
         fragment.setArguments(bundle);
 
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            clickCallback = (PreviousNextClickListener) getContext();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement " + PreviousNextClickListener.class.getSimpleName());
+        }
     }
 
     @Override
@@ -75,6 +100,7 @@ public class RecipeStepFragment extends Fragment {
         if (args != null) {
             recipe = args.getParcelable(RECIPE_KEY);
             step = args.getParcelable(STEP_KEY);
+            stepList = args.getParcelableArrayList(STEP_LIST_KEY);
         }
 
         setTitle();
@@ -86,6 +112,7 @@ public class RecipeStepFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelable(RECIPE_KEY, recipe);
         outState.putParcelable(STEP_KEY, step);
+        outState.putParcelableArrayList(STEP_LIST_KEY, stepList);
         super.onSaveInstanceState(outState);
     }
 
@@ -126,6 +153,8 @@ public class RecipeStepFragment extends Fragment {
     private void initViews(View baseView) {
         stepTextView = baseView.findViewById(R.id.stepDescriptionTextView);
         playerView = baseView.findViewById(R.id.videoPlayer);
+        nextStepContainer = baseView.findViewById(R.id.nextStepContainer);
+        previousStepContainer = baseView.findViewById(R.id.previousStepContainer);
 
         stepTextView.setText(step.getDescription());
         playerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.ic_recipe_video_place_holder));
@@ -134,6 +163,22 @@ public class RecipeStepFragment extends Fragment {
             initializePlayer(Uri.parse(step.getVideoURL()));
         } else {
             playerView.setVisibility(View.GONE);
+        }
+
+        if (ModelUtils.hasNextStep(stepList, step)) {
+            nextStepContainer.setOnClickListener(view ->
+                    clickCallback.showStep(ModelUtils.getNextStep(stepList, step))
+            );
+        } else {
+            nextStepContainer.setVisibility(View.GONE);
+        }
+
+        if (ModelUtils.hasPreviousStep(stepList, step)) {
+            previousStepContainer.setOnClickListener(view ->
+                    clickCallback.showStep(ModelUtils.getPreviousStep(stepList, step))
+            );
+        } else {
+            previousStepContainer.setVisibility(View.GONE);
         }
     }
 

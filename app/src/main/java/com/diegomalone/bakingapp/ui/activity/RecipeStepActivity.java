@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
+import com.diegomalone.bakingapp.ui.events.PreviousNextClickListener;
 import com.diegomalone.bakingapp.ui.fragment.RecipeStepFragment;
 
 import butterknife.BindView;
@@ -20,7 +21,7 @@ import static com.diegomalone.bakingapp.utils.FlowController.STEP_EXTRA;
  * Created by malone on 12/02/18.
  */
 
-public class RecipeStepActivity extends BaseActivity {
+public class RecipeStepActivity extends BaseActivity implements PreviousNextClickListener {
 
     public static final String STEP_DETAIL_FRAGMENT_TAG = "stepDetailFragmentTag";
 
@@ -32,6 +33,8 @@ public class RecipeStepActivity extends BaseActivity {
 
     private RecipeStepFragment recipeStepFragment;
 
+    private Recipe recipe;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,18 +43,29 @@ public class RecipeStepActivity extends BaseActivity {
         setupToolbar(toolbar, true);
 
         Intent intent = getIntent();
-        Recipe recipe = intent.getParcelableExtra(RECIPE_EXTRA);
+        recipe = intent.getParcelableExtra(RECIPE_EXTRA);
         Step step = intent.getParcelableExtra(STEP_EXTRA);
 
         if (savedInstanceState == null) {
             recipeStepFragment = RecipeStepFragment.newInstance(recipe, step);
 
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment, recipeStepFragment, STEP_DETAIL_FRAGMENT_TAG)
-                    .commit();
+            showFragment();
         } else {
             recipeStepFragment = (RecipeStepFragment) getSupportFragmentManager().findFragmentByTag(STEP_DETAIL_FRAGMENT_TAG);
         }
+    }
+
+    @Override
+    public void showStep(Step step) {
+        recipeStepFragment = RecipeStepFragment.newInstance(recipe, step);
+
+        showFragment();
+    }
+
+    private void showFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment, recipeStepFragment, STEP_DETAIL_FRAGMENT_TAG)
+                .commit();
     }
 }
