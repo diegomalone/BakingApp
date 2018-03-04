@@ -8,8 +8,12 @@
     <color name="colorIcons">#212121</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
+    <color name="colorDarkBackgroundText">#FFFFFF</color>
     <color name="colorDivider">#BDBDBD</color>
 
     <color name="colorTransparent">#00FFFFFF</color>
     <color name="colorStepSelected">@color/colorPrimaryLight</color>
+
+    <color name="widgetTitleBackground">@color/colorPrimary</color>
+    <color name="widgetTitleText">@color/colorDarkBackgroundText</color>
 </resources>
