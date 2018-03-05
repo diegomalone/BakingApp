@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,6 +20,7 @@ import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
 import com.diegomalone.bakingapp.ui.adapter.RecipeContentListAdapter;
 import com.diegomalone.bakingapp.ui.events.StepClickListener;
+import com.diegomalone.bakingapp.widget.RecipeWidgetManager;
 
 import java.util.ArrayList;
 
@@ -74,6 +78,7 @@ public class RecipeStepListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_step_list, container, false);
     }
 
@@ -114,6 +119,25 @@ public class RecipeStepListFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_recipe_details, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.action_add_to_widget:
+                setRecipeToWidget();
+                return true;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
     private void setTitle() {
         if (getActivity() != null) {
             getActivity().setTitle(recipe.getName());
@@ -126,5 +150,10 @@ public class RecipeStepListFragment extends Fragment {
 
         recipeContentListAdapter = new RecipeContentListAdapter(getContext(), ingredientList, stepList, clickCallback);
         stepListRecyclerView.setAdapter(recipeContentListAdapter);
+    }
+
+    private void setRecipeToWidget() {
+        RecipeWidgetManager recipeWidgetManager = new RecipeWidgetManager(getActivity());
+        recipeWidgetManager.setRecipe(recipe);
     }
 }

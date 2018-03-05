@@ -13,6 +13,7 @@ import com.diegomalone.bakingapp.ui.events.PreviousNextClickListener;
 import com.diegomalone.bakingapp.ui.events.StepClickListener;
 import com.diegomalone.bakingapp.ui.fragment.RecipeStepFragment;
 import com.diegomalone.bakingapp.ui.fragment.RecipeStepListFragment;
+import com.diegomalone.bakingapp.utils.FlowController;
 
 import butterknife.BindView;
 
@@ -38,6 +39,8 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
     private RecipeStepListFragment recipeStepListFragment;
     private RecipeStepFragment recipeStepFragment;
 
+    private Boolean isPhone;
+
     private Recipe recipe;
     private Step currentStep;
 
@@ -47,6 +50,8 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
         setContentView(R.layout.activity_recipe_step_list);
         bindViews();
         setupToolbar(toolbar, true);
+
+        isPhone = getResources().getBoolean(R.bool.is_phone);
 
         Intent intent = getIntent();
         recipe = intent.getParcelableExtra(RECIPE_EXTRA);
@@ -62,17 +67,19 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
             recipeStepListFragment = (RecipeStepListFragment) getSupportFragmentManager().findFragmentByTag(STEP_LIST_FRAGMENT_TAG);
         }
 
-        if (savedInstanceState != null) {
-            currentStep = savedInstanceState.getParcelable(CURRENT_STEP_KEY);
-        }
-
-        if (currentStep == null) {
-            if (recipe.getStepList() != null && !recipe.getStepList().isEmpty()) {
-                currentStep = recipe.getStepList().get(0);
+        if (!isPhone) {
+            if (savedInstanceState != null) {
+                currentStep = savedInstanceState.getParcelable(CURRENT_STEP_KEY);
             }
-        }
 
-        showStep(currentStep);
+            if (currentStep == null) {
+                if (recipe.getStepList() != null && !recipe.getStepList().isEmpty()) {
+                    currentStep = recipe.getStepList().get(0);
+                }
+            }
+
+            showStep(currentStep);
+        }
     }
 
     @Override
@@ -91,10 +98,14 @@ public class RecipeStepListActivity extends BaseActivity implements StepClickLis
     public void showStep(Step step) {
         if (step == null) return;
 
-        recipeStepFragment = RecipeStepFragment.newInstance(recipe, step);
-        recipeStepListFragment.setStepSelected(step);
+        if (isPhone) {
+            FlowController.openRecipeStepScreen(this, recipe, step);
+        } else {
+            recipeStepFragment = RecipeStepFragment.newInstance(recipe, step);
+            recipeStepListFragment.setStepSelected(step);
 
-        showFragment();
+            showFragment();
+        }
     }
 
     private void showFragment() {

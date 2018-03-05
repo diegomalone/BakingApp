@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,6 +38,7 @@ public class RecipeListFragment extends Fragment {
     private ArrayList<Recipe> recipeList = new ArrayList<>();
 
     private RecyclerView recipeListRecyclerView;
+    private SwipeRefreshLayout swipeToRefreshLayout;
     private RecipeListAdapter recipeListAdapter;
 
     private BackingDataSource backingDataSource;
@@ -66,7 +65,6 @@ public class RecipeListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_recipe_list, container, false);
     }
 
@@ -79,6 +77,11 @@ public class RecipeListFragment extends Fragment {
         }
 
         recipeListRecyclerView = view.findViewById(R.id.recipeListRecyclerView);
+        swipeToRefreshLayout = view.findViewById(R.id.swipeToRefreshLayout);
+
+        swipeToRefreshLayout.setOnRefreshListener(() ->
+                loadRecipes()
+        );
 
         initRecyclerView();
 
@@ -101,29 +104,13 @@ public class RecipeListFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_recipe_list, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.action_reload:
-                loadRecipes();
-                return true;
-            default:
-                break;
-        }
-
-        return false;
-    }
-
     public void loadRecipes() {
         backingDataSource.getRecipeList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() ->
+                        swipeToRefreshLayout.setRefreshing(false)
+                )
                 .subscribe(recipeList -> {
                             Timber.i("Recipe list received");
                             ToastUtils.showToast(getContext(), getString(R.string.success_fetching_recipe_list));
