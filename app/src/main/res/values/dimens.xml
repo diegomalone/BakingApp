@@ -5,6 +5,7 @@
     <dimen name="huge_margin">32dp</dimen>
 
     <dimen name="text_highlight">16sp</dimen>
+    <dimen name="text_big">22sp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
 

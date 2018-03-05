@@ -7,7 +7,7 @@
     <TextView
         android:id="@+id/widget_title"
         android:layout_width="match_parent"
-        android:textSize="@dimen/text_highlight"
+        android:textSize="@dimen/text_big"
         android:layout_height="wrap_content"
         android:background="@color/widgetTitleBackground"
         android:textColor="@color/widgetTitleText"
@@ -15,8 +15,9 @@
         android:text="@string/app_name" />
 
     <ListView
+        android:background="@android:color/white"
         android:id="@+id/widget_ingredient_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

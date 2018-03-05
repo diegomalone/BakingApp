@@ -22,4 +22,7 @@
 
     <string name="step_navigation_previous">Previous step</string>
     <string name="step_navigation_next">Next step</string>
+
+    <string name="widget_no_recipe_selected">No recipe selected</string>
+    <string name="widget_add_success">Recipe added to widget</string>
 </resources>

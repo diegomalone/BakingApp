@@ -20,6 +20,7 @@ import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
 import com.diegomalone.bakingapp.ui.adapter.RecipeContentListAdapter;
 import com.diegomalone.bakingapp.ui.events.StepClickListener;
+import com.diegomalone.bakingapp.utils.ToastUtils;
 import com.diegomalone.bakingapp.widget.RecipeWidgetManager;
 
 import java.util.ArrayList;
@@ -155,5 +156,6 @@ public class RecipeStepListFragment extends Fragment {
     private void setRecipeToWidget() {
         RecipeWidgetManager recipeWidgetManager = new RecipeWidgetManager(getActivity());
         recipeWidgetManager.setRecipe(recipe);
+        ToastUtils.showToast(getContext(), getString(R.string.widget_add_success));
     }
 }

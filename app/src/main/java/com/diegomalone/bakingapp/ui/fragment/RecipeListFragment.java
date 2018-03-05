@@ -18,7 +18,6 @@ import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.network.BackingDataSource;
 import com.diegomalone.bakingapp.ui.adapter.RecipeListAdapter;
 import com.diegomalone.bakingapp.ui.events.RecipeClickListener;
-import com.diegomalone.bakingapp.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +104,8 @@ public class RecipeListFragment extends Fragment {
     }
 
     public void loadRecipes() {
+        swipeToRefreshLayout.setRefreshing(true);
+
         backingDataSource.getRecipeList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -113,7 +114,6 @@ public class RecipeListFragment extends Fragment {
                 )
                 .subscribe(recipeList -> {
                             Timber.i("Recipe list received");
-                            ToastUtils.showToast(getContext(), getString(R.string.success_fetching_recipe_list));
                             updateRecipeList(recipeList);
                         }, error -> Timber.e(error)
                 );

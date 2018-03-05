@@ -35,6 +35,13 @@ public class RecipeWidgetManager {
         updateWidget();
     }
 
+    public Recipe getRecipe() {
+        String recipeJson = sharedPreferences.getString(KEY_WIDGET_RECIPE_ID, null);
+        if (recipeJson == null) return null;
+
+        return new Gson().fromJson(recipeJson, Recipe.class);
+    }
+
     private void updateWidget() {
         Intent intent = new Intent(context, RecipeWidgetProvider.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
