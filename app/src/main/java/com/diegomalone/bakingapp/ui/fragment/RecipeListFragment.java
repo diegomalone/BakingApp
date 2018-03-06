@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.diegomalone.bakingapp.R;
+import com.diegomalone.bakingapp.idlingresource.RecipeIdlingResource;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.network.BackingDataSource;
 import com.diegomalone.bakingapp.ui.adapter.RecipeListAdapter;
@@ -44,6 +46,9 @@ public class RecipeListFragment extends Fragment {
     private boolean isPhone = true;
 
     private RecipeClickListener clickCallback;
+
+    @Nullable
+    private RecipeIdlingResource idlingResource;
 
     public RecipeListFragment() {
         backingDataSource = BackingDataSource.getInstance();
@@ -106,11 +111,20 @@ public class RecipeListFragment extends Fragment {
     public void loadRecipes() {
         swipeToRefreshLayout.setRefreshing(true);
 
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
+
         backingDataSource.getRecipeList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(() ->
-                        swipeToRefreshLayout.setRefreshing(false)
+                .doOnTerminate(() -> {
+                            swipeToRefreshLayout.setRefreshing(false);
+
+                            if (idlingResource != null) {
+                                idlingResource.setIdleState(true);
+                            }
+                        }
                 )
                 .subscribe(recipeList -> {
                             Timber.i("Recipe list received");
@@ -148,5 +162,13 @@ public class RecipeListFragment extends Fragment {
         }
 
         return layoutManager;
+    }
+
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (idlingResource == null) {
+            idlingResource = new RecipeIdlingResource();
+        }
+        return idlingResource;
     }
 }

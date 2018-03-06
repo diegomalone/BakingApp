@@ -1,7 +1,9 @@
 package com.diegomalone.bakingapp.ui.activity;
 
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.widget.Toolbar;
 
 import com.diegomalone.bakingapp.R;
@@ -47,5 +49,14 @@ public class RecipeListActivity extends BaseActivity
     @Override
     public void onRecipeClick(Recipe recipe) {
         FlowController.openRecipeStepListScreen(this, recipe);
+    }
+
+    @VisibleForTesting
+    public IdlingResource getIdlingResource() {
+        if (recipeListFragment != null) {
+            return recipeListFragment.getIdlingResource();
+        }
+
+        return null;
     }
 }
