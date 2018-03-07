@@ -9,6 +9,8 @@
     <string name="recipe_contents_ingredients_title">Ingredients</string>
     <string name="recipe_contents_steps_title">Steps</string>
 
+    <string name="recipe_image">Recipe image</string>
+
     <string name="action_reload">Reload</string>
     <string name="action_add_to_widget">Add to Widget</string>
 

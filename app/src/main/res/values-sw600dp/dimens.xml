@@ -4,5 +4,6 @@
     <dimen name="item_margin">12dp</dimen>
 
     <dimen name="step_video_height">400dp</dimen>
+    <dimen name="step_image_height">300dp</dimen>
     <dimen name="master_detail_panel_width">300dp</dimen>
 </resources>

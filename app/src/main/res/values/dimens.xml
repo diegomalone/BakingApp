@@ -13,5 +13,6 @@
     <dimen name="item_margin">8dp</dimen>
 
     <dimen name="step_video_height">240dp</dimen>
+    <dimen name="step_image_height">160dp</dimen>
     <dimen name="step_navigation_button_size">48dp</dimen>
 </resources>

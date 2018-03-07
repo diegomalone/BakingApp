@@ -10,8 +10,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 import com.diegomalone.bakingapp.model.Step;
@@ -34,6 +36,9 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 /**
  * Created by malone on 12/02/18.
  */
@@ -50,6 +55,7 @@ public class RecipeStepFragment extends Fragment {
 
     private TextView stepTextView;
     private View nextStepContainer, previousStepContainer;
+    private ImageView stepImageView;
 
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView playerView;
@@ -155,6 +161,7 @@ public class RecipeStepFragment extends Fragment {
         playerView = baseView.findViewById(R.id.videoPlayer);
         nextStepContainer = baseView.findViewById(R.id.nextStepContainer);
         previousStepContainer = baseView.findViewById(R.id.previousStepContainer);
+        stepImageView = baseView.findViewById(R.id.stepImage);
 
         stepTextView.setText(step.getDescription());
         playerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.ic_recipe_video_place_holder));
@@ -162,7 +169,18 @@ public class RecipeStepFragment extends Fragment {
         if (step.getVideoURL() != null && !step.getVideoURL().isEmpty()) {
             initializePlayer(Uri.parse(step.getVideoURL()));
         } else {
-            playerView.setVisibility(View.GONE);
+            playerView.setVisibility(GONE);
+        }
+
+        if (getContext() != null && step.getThumbnailURL() != null && !step.getThumbnailURL().isEmpty()) {
+            stepImageView.setVisibility(VISIBLE);
+
+            Glide.with(getContext())
+                    .load(step.getThumbnailURL())
+                    .load(step.getThumbnailURL())
+                    .into(stepImageView);
+        } else {
+            stepImageView.setVisibility(GONE);
         }
 
         if (ModelUtils.hasNextStep(stepList, step)) {
@@ -170,7 +188,7 @@ public class RecipeStepFragment extends Fragment {
                     clickCallback.showStep(ModelUtils.getNextStep(stepList, step))
             );
         } else {
-            nextStepContainer.setVisibility(View.GONE);
+            nextStepContainer.setVisibility(GONE);
         }
 
         if (ModelUtils.hasPreviousStep(stepList, step)) {
@@ -178,7 +196,7 @@ public class RecipeStepFragment extends Fragment {
                     clickCallback.showStep(ModelUtils.getPreviousStep(stepList, step))
             );
         } else {
-            previousStepContainer.setVisibility(View.GONE);
+            previousStepContainer.setVisibility(GONE);
         }
     }
 

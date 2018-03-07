@@ -6,9 +6,11 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.diegomalone.bakingapp.R;
 import com.diegomalone.bakingapp.model.Recipe;
 
@@ -22,6 +24,7 @@ public class RecipeCardView extends LinearLayout {
     private Recipe recipe;
 
     private TextView recipeNameTextView;
+    private ImageView recipeImage;
 
     public RecipeCardView(@NonNull Context context) {
         super(context);
@@ -43,6 +46,7 @@ public class RecipeCardView extends LinearLayout {
         View view = LayoutInflater.from(context).inflate(R.layout.view_recipe, this, true);
 
         recipeNameTextView = view.findViewById(R.id.recipeNameTextView);
+        recipeImage = view.findViewById(R.id.recipeImage);
     }
 
     public void setRecipe(Recipe recipe) {
@@ -51,6 +55,16 @@ public class RecipeCardView extends LinearLayout {
         this.recipe = recipe;
 
         recipeNameTextView.setText(recipe.getName());
+
+        if (recipe.getImageURL() != null && !recipe.getImageURL().isEmpty()) {
+            recipeImage.setVisibility(VISIBLE);
+
+            Glide.with(context)
+                    .load(recipe.getImageURL())
+                    .into(recipeImage);
+        } else {
+            recipeImage.setVisibility(GONE);
+        }
     }
 
     public Recipe getRecipe() {
