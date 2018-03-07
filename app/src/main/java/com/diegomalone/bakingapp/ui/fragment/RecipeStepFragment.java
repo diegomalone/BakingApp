@@ -49,6 +49,9 @@ public class RecipeStepFragment extends Fragment {
     public static final String STEP_KEY = "stepKey";
     public static final String STEP_LIST_KEY = "stepListKey";
 
+    public static final String VIDEO_POSITION = "videoPosition";
+    public static final String VIDEO_PLAY_STATUS = "videoPlayStatus";
+
     private Recipe recipe;
     private Step step;
     private ArrayList<Step> stepList = new ArrayList<>();
@@ -59,6 +62,8 @@ public class RecipeStepFragment extends Fragment {
 
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView playerView;
+    private boolean playWhenReady = true;
+    private Long playerPosition = 0L;
 
     private PreviousNextClickListener clickCallback;
 
@@ -109,6 +114,11 @@ public class RecipeStepFragment extends Fragment {
             stepList = args.getParcelableArrayList(STEP_LIST_KEY);
         }
 
+        if (savedInstanceState != null) {
+            playWhenReady = savedInstanceState.getBoolean(VIDEO_PLAY_STATUS);
+            playerPosition = savedInstanceState.getLong(VIDEO_POSITION);
+        }
+
         setTitle();
 
         initViews(view);
@@ -116,35 +126,54 @@ public class RecipeStepFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        if (exoPlayer != null) {
+            outState.putBoolean(VIDEO_PLAY_STATUS, exoPlayer.getPlayWhenReady());
+            outState.putLong(VIDEO_POSITION, exoPlayer.getCurrentPosition());
+        }
+
         outState.putParcelable(RECIPE_KEY, recipe);
         outState.putParcelable(STEP_KEY, step);
         outState.putParcelableArrayList(STEP_LIST_KEY, stepList);
+
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
         releasePlayer();
     }
 
-    private void initializePlayer(Uri mediaUri) {
+    @Override
+    public void onStart() {
+        super.onStart();
+        initializePlayer();
+    }
 
-        if (exoPlayer == null) {
-            // Create an instance of the ExoPlayer.
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
-            playerView.setPlayer(exoPlayer);
+    private void initializePlayer() {
+        if (step.getVideoURL() != null && !step.getVideoURL().isEmpty()) {
+            Uri mediaUri = Uri.parse(step.getVideoURL());
 
-            // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(getContext(), "BakingApp");
-            MediaSource mediaSource = new ExtractorMediaSource(mediaUri,
-                    new DefaultDataSourceFactory(getContext(), userAgent),
-                    new DefaultExtractorsFactory(),
-                    null, null);
-            exoPlayer.prepare(mediaSource);
-            exoPlayer.setPlayWhenReady(true);
+            if (exoPlayer == null) {
+                // Create an instance of the ExoPlayer.
+                TrackSelector trackSelector = new DefaultTrackSelector();
+                LoadControl loadControl = new DefaultLoadControl();
+                exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+                playerView.setPlayer(exoPlayer);
+
+                // Prepare the MediaSource.
+                String userAgent = Util.getUserAgent(getContext(), "BakingApp");
+                MediaSource mediaSource = new ExtractorMediaSource(mediaUri,
+                        new DefaultDataSourceFactory(getContext(), userAgent),
+                        new DefaultExtractorsFactory(),
+                        null, null);
+                exoPlayer.prepare(mediaSource);
+                exoPlayer.setPlayWhenReady(playWhenReady);
+
+                if (playerPosition != 0) exoPlayer.seekTo(playerPosition);
+            }
+        } else {
+            playerView.setVisibility(GONE);
         }
     }
 
@@ -166,11 +195,7 @@ public class RecipeStepFragment extends Fragment {
         stepTextView.setText(step.getDescription());
         playerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.ic_recipe_video_place_holder));
 
-        if (step.getVideoURL() != null && !step.getVideoURL().isEmpty()) {
-            initializePlayer(Uri.parse(step.getVideoURL()));
-        } else {
-            playerView.setVisibility(GONE);
-        }
+        initializePlayer();
 
         if (getContext() != null && step.getThumbnailURL() != null && !step.getThumbnailURL().isEmpty()) {
             stepImageView.setVisibility(VISIBLE);
